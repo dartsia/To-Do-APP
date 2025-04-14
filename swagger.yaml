@@ -8,6 +8,21 @@ servers:
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          example: johndoe@example.com
+        role:
+          type: string
+          example: user
     Task:
       type: object
       properties:
@@ -211,12 +226,15 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
-                password:
+                username:
                   type: string
                 email:
                   type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [admin, user]
       responses:
         '201':
           description: User registered successfully
@@ -283,3 +301,51 @@ paths:
           description: Internal Server Error
     security:
       - cookieAuth: []
+  /admin/users:
+    get:
+      summary: Get all users
+      tags:
+        - Admin
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Server error
+  /admin/users/{id}:
+    delete:
+      summary: Delete a user by ID
+      tags:
+        - Admin
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error

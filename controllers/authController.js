@@ -8,6 +8,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const handleRegister = async (req, res) => {
     const { username, email, password } = req.body;
+    const role = req.body.role || 'user';
 
     if (!username || !email || !password)
         return res.status(400).json({ message: 'Username, email, and password are required.' });
@@ -18,7 +19,7 @@ const handleRegister = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await createUser(username, email, hashedPassword, 'user'); // role за замовчуванням
+        const newUser = await createUser(username, email, hashedPassword, role);
 
         res.status(201).json({
             message: 'User registered successfully.',
@@ -56,7 +57,8 @@ const handleLogin = async (req, res) => {
         const refreshToken = jwt.sign(
             {
                 id: user.id,
-                username: user.username
+                username: user.username,
+                role: user.role
             },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: '1d' }
