@@ -57,8 +57,13 @@ const getUserTasks = async (req, res) => {
         return res.status(400).json({ message: 'User id is required.' });
     }
 
+    let statuses = [];
+    if (req.query.status) {
+        statuses = req.query.status.split(',').map(s => s.trim());
+    }
+
     try {
-        const tasks = await tasksModel.getTasksByUserId(user_id);
+        const tasks = await tasksModel.getTasksByUserId(user_id, statuses);
         res.json(tasks);
     } catch (err) {
         console.error('Get tasks error:', err.message);

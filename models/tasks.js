@@ -11,9 +11,19 @@ async function createTask(name, description, status = 'new', due_time, user_id) 
     return result.rows[0];
 }
 
-async function getTasksByUserId(userId) {
-    const query = `SELECT * FROM tasks WHERE user_id = $1 ORDER BY due_time ASC;`;
-    const result = await pool.query(query, [userId]);
+async function getTasksByUserId(userId, statuses) {
+    let query = 'SELECT * FROM tasks WHERE user_id = $1';
+    const params = [userId];
+
+    if (statuses.length > 0) {
+        const statusPlaceholders = statuses.map((_, i) => `$${i + 2}`).join(', ');
+        query += ` AND status IN (${statusPlaceholders})`;
+        params.push(...statuses);
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    const result = await pool.query(query, params);
     return result.rows;
 }
 
