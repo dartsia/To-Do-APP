@@ -4,13 +4,14 @@ let express = require('express');
 let authRoute = require('./routes/authRouter');
 let taskRoute = require('./routes/taskRouter');
 const cookieParser = require('cookie-parser');
-const verifyJWT = require('./middleware/verifyJWT')
+const verifyJWT = require('./middleware/verifyJWT');
+const logRequestToDatabase = require('./middleware/logRequests');
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
+app.use(logRequestToDatabase);
 app.use(express.json());
 app.use(cookieParser());
 
