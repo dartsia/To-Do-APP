@@ -87,7 +87,7 @@ const deleteTask = async (req, res) => {
 }
 
 const getSpecificTask = async (req, res) => {
-    const taskName = req.params.name;
+    const taskName = req.query.name;
 
     try {
         const task = await tasksModel.getTaskByName(taskName);

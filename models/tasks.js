@@ -30,7 +30,7 @@ async function getTasksByUserId(userId, statuses) {
 async function getTaskByName(name) {
     const result = await pool.query(
         'SELECT * FROM tasks WHERE name = $1',
-        [email]
+        [name]
     );
     return result.rows[0];
 }

@@ -1,0 +1,285 @@
+openapi: 3.0.3
+info:
+  title: To-do app API
+  description: API for managing your tasks
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [new, in_progress, done]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Auth:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+securitySchemes:
+  cookieAuth:
+    type: apiKey
+    in: cookie
+    name: jwt
+
+paths:
+  /tasks:
+    get:
+      summary: Get all tasks for user
+      operationId: getAllTasks
+      tags:
+        - Tasks
+      parameters:
+        - name: status
+          in: query
+          description: Filtering tasks by status
+          required: false
+          schema:
+            type: string
+            enum: [new, in_progress, done]
+      responses:
+        '200':
+          description: Tasks list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '400':
+          description: Bad request
+        '401':
+          description: Not authorized
+        '500':
+          description: Server error
+  /create-task:
+    post:
+      summary: Create a new task
+      operationId: createTask
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                due_time:
+                  type: timestamp
+                user_id:
+                  type: integer
+      responses:
+        '201':
+          description: Task created succesfully
+        '400':
+          description: Bad request
+        '401':
+          description: Not authorized
+  /update-task/{id}:
+    put:
+      summary: Update task by id
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer        
+      requestBody:
+        description: Update an existing task
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                properties:
+              name:
+                type: string
+              description:
+                type: string
+              due_time:
+                type: timestamp 
+      responses:
+        '200':
+          description: Task updated succesfully
+        '404':
+          description: Task not found in the database
+        '500':
+          description: Internal Server Error
+  /update-status/{id}:
+    put:
+      summary: Update task status
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update status of the task
+        content:
+          application/json:
+            schema:
+              type: string
+              enum: [new, in_progress, done]
+      responses:
+        '200':
+          description: Status updated successfully
+        '404':
+          description: Task not found in the database
+        '500':
+          description: Internal Server Error
+  /delete-task/{id}:
+    delete:
+      summary: Delete a task
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task deleted successfully
+        '404':
+          description: Task not found in the database
+        '500':
+          description: Internal Server Error
+  /find-task:
+    get:
+      summary: Find task by name
+      tags:
+        - Tasks
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task and its details
+        '404':
+          description: Task not found in the database
+        '500':
+          description: Internal Server Error
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '409':
+          description: User already exists
+        '500':
+          description: Internal Server Error
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Internal Server Error
+  /auth/refresh:
+    get:
+      summary: Refresh access token from refresh token
+      tags:
+        - Auth
+      responses:
+      '200':
+        description: New access token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+      '401':
+        description: No refresh токен in cookie
+      '403':
+        description: Refresh token is not valid or is expired
+      '500':
+        description: Internal Server Error
+      security:
+        - cookieAuth: []
+  /auth/logout:
+    get:
+      summary: User's logout
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: Succesfull logout or refresh token not found
+        '500':
+          description: Internal Server Error
+    security:
+      - cookieAuth: []
