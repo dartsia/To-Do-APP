@@ -125,13 +125,12 @@ paths:
             schema:
               type: object
               properties:
-                properties:
-              name:
-                type: string
-              description:
-                type: string
-              due_time:
-                type: timestamp 
+                name:
+                  type: string
+                description:
+                  type: string
+                due_time:
+                  type: timestamp 
       responses:
         '200':
           description: Task updated succesfully
@@ -155,8 +154,11 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              enum: [new, in_progress, done]
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [new, in_progress, done]
       responses:
         '200':
           description: Status updated successfully
