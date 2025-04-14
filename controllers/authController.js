@@ -50,7 +50,7 @@ const handleLogin = async (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, role: user.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '30s' }
+            { expiresIn: '10m' }
         );
 
         const refreshToken = jwt.sign(
@@ -72,6 +72,12 @@ const handleLogin = async (req, res) => {
             secure: true,
             sameSite: 'None',
             maxAge: 24 * 60 * 60 * 1000, // 1 день
+        });
+        res.cookie('access_token', accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: 10 * 60 * 1000,
         });
 
         res.json({ accessToken });
