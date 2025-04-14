@@ -54,6 +54,8 @@ paths:
       operationId: getAllTasks
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       parameters:
         - name: status
           in: query
@@ -83,6 +85,8 @@ paths:
       operationId: createTask
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       requestBody:
         required: true
         content:
@@ -112,6 +116,8 @@ paths:
       summary: Update task by id
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       parameters:
         - name: id
           in: path
@@ -143,6 +149,8 @@ paths:
       summary: Update task status
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       parameters:
         - name: id
           in: path
@@ -171,6 +179,8 @@ paths:
       summary: Delete a task
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       parameters:
         - name: id
           in: path
@@ -189,6 +199,8 @@ paths:
       summary: Find task by name
       tags:
         - Tasks
+      security:
+        - cookieAuth: []
       parameters:
         - name: name
           in: query
